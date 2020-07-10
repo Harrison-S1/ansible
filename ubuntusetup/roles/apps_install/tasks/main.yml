@@ -1,0 +1,14 @@
+---
+
+   - name: Install glances.
+     apt:
+       name: glances
+       state: latest
+
+   - name: Install bmon.
+     apt:
+       name: bmon
+       state: latest
+
+
+

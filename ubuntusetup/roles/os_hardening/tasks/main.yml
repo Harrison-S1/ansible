@@ -1,0 +1,145 @@
+---
+
+   - name: Install debsums.
+     apt:
+       name: debsums
+       state: latest
+
+   - name: Install apt-show-versions.
+     apt:
+       name: apt-show-versions
+       state: latest
+
+   - name: Install libpam-cracklib.
+     apt:
+       name: libpam-cracklib
+       state: latest
+
+   - name: Install rkhunter scanners.
+     apt:
+       name: rkhunter
+       state: latest
+
+   - name: Install chkrootkit scanners.
+     apt:
+       name: chkrootkit
+       state: latest
+
+   - name: Install auditd.
+     apt:
+       name: auditd
+       state: latest
+
+   - name: Install auditd plugin.
+     apt:
+       name: audispd-plugins
+       state: latest
+
+   - name: Install sysstat.
+     apt:
+       name: sysstat
+       state: latest
+
+   - name: Comment out login screen message for ubuntu motd.
+     replace:
+       path: /etc/pam.d/sshd
+       regexp: 'session    optional     pam_motd.so  motd=/run/motd.dynamic'
+       replace: '#session    optional     pam_motd.so  motd=/run/motd.dynamic'
+
+   - name: Comment out login screen message for ubuntu noupdate.
+     replace:
+       path: /etc/pam.d/sshd
+       regexp: 'session    optional     pam_motd.so noupdate'
+       replace: '#session    optional     pam_motd.so noupdate'
+
+   - name: Secure shared memory
+     lineinfile:
+       path: /etc/fstab
+       line: tmpfs /run/shm tmpfs defaults,noexec,nosuid 0 0
+
+   - name: Enable sysstat.
+     lineinfile:
+       path: /etc/default/sysstat
+       regexp: '^ENABLED="false"'
+       line: ENABLED="true"
+       state: present
+       backrefs: true
+
+   - name: Remove host details from postfix.
+     lineinfile:
+       path: /etc/postfix/main.cf
+       regexp: '^smtpd_banner ='
+       line: smtpd_banner = $myhostname ESMTP
+       state: present
+       backrefs: true
+
+   - name: Add audit rule for passwd.
+     lineinfile:
+       path: /etc/audit/rules.d/audit.rules
+       line: -w /etc/passwd -p wa -k passwd
+       create: yes
+
+   - name: Add audit rule for shadow.
+     lineinfile:
+       path: /etc/audit/rules.d/audit.rules
+       line: -w /etc/passwd -p wa -k shadow
+       create: yes
+
+   - name: Restart auditd.
+     service:
+       name: auditd
+       state: restarted
+
+
+   - name: Disable the verify command for postfix.
+     command: postconf -e disable_vrfy_command=yes
+
+   - name: Copy issue.net file from host to remotehost,  backing up the original if it differs from the copied version.
+     copy:
+       src: ./templates/issue.net
+       dest: /etc/issue.net
+       owner: root
+       group: root
+       mode: '0644'
+       backup: yes
+
+   - name: Copy issue file from host to remotehost,  backing up the original if it differs from the copied version.
+     copy:
+       src: ./templates/issue
+       dest: /etc/issue
+       owner: root
+       group: root
+       mode: '0644'
+       backup: yes
+
+   - name: Set min password days.
+     lineinfile:
+       path: /etc/login.defs
+       regexp: '^PASS_MIN_DAYS'
+       line: PASS_MIN_DAYS   1
+       state: present
+       backrefs: true
+
+   - name: Set max password days.
+     lineinfile:
+       path: /etc/login.defs
+       regexp: '^PASS_MAX_DAYS'
+       line: PASS_MAX_DAYS   3650
+       state: present
+       backrefs: true
+
+   - name: Set min SHA rounds used.
+     lineinfile:
+       path: /etc/login.defs
+       regexp: '^# SHA_CRYPT_MIN_ROUNDS 5000'
+       line: SHA_CRYPT_MIN_ROUNDS 5000
+       state: present
+       backrefs: true
+
+   - name: Set max SHA rounds used.
+     lineinfile:
+       path: /etc/login.defs
+       regexp: '^# SHA_CRYPT_MAX_ROUNDS 5000'
+       line: SHA_CRYPT_MAX_ROUNDS 5000
+       state: present
+       backrefs: true
