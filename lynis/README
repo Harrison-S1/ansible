@@ -1,0 +1,1 @@
+This downloads lynis verison 3.0.1. Unzips it and runs the standard audit system. The report is put into the scans folder on you locate system within the play. It then cleans up by removing the tar lynis folder and report from the system. Note you need to run the play with sudo rights. Used for gernal reports. 
