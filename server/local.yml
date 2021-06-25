@@ -1,5 +1,5 @@
 ---
-- hosts: newservers
+- hosts: all
   become: yes
 
   pre_tasks:
