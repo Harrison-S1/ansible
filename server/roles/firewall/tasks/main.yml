@@ -1,0 +1,27 @@
+---
+
+   - name: Start service ufw
+     command: ufw --force enable
+
+   - name: Disable ipv6
+     lineinfile:
+       path: /etc/default/ufw
+       regexp: '^IPV6=yes'
+       line: IPV6=no
+       backrefs: true
+
+   - name: Allow access to port 22 for ssh
+     ufw:
+       rule: allow
+       port: '22'
+
+   - name: Allow all access to tcp port 10050 for zabbix
+     ufw:
+       rule: allow
+       port: '10050'
+       proto: tcp
+
+   - name: Restart ufw
+     service:
+       name: ufw
+       state: restarted

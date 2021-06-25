@@ -1,0 +1,85 @@
+---
+   - name: Disable AllowTcpForwarding
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#AllowTcpForwarding yes'
+       line: AllowTcpForwarding no
+       state: present
+       backrefs: true
+
+   - name: Set ClientAliveCountMax
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#ClientAliveCountMax 3'
+       line: ClientAliveCountMax 2
+       state: present
+       backrefs: true
+
+   - name: Set log level
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#LogLevel INFO'
+       line: LogLevel VERBOSE
+       state: present
+       backrefs: true
+
+   - name: Set MaxAuthTries
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#MaxAuthTries 6'
+       line: MaxAuthTries 3
+       state: present
+       backrefs: true
+
+   - name: Set MaxSessions
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#MaxSessions 10'
+       line: MaxSessions 2
+       state: present
+       backrefs: true
+
+   - name: Disable TCPKeepAlive
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#TCPKeepAlive yes'
+       line: TCPKeepAlive no
+       state: present
+       backrefs: true
+
+   - name: Disable X11Forwarding
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^X11Forwarding yes'
+       line: X11Forwarding no
+       state: present
+       backrefs: true
+
+   - name: Set compression
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#Compression delayed'
+       line: Compression no
+       state: present
+       backrefs: true
+
+   - name: Disable AllowAgentForwarding
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#AllowAgentForwarding yes'
+       line: AllowAgentForwarding no
+       state: present
+       backrefs: true
+
+   - name:
+     lineinfile:
+       path: /etc/ssh/sshd_config
+       regexp: '^#Banner none'
+       line: Banner /etc/issue.net
+       state: present
+       backrefs: true
+
+   - name: Restart service zabbix-agent.
+     service:
+       name: ssh
+       state: restarted

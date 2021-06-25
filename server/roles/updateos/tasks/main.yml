@@ -1,0 +1,17 @@
+---
+
+   - name: updates server
+     apt: update_cache=yes
+     ignore_errors: yes
+
+   - name: upgrade a server
+     apt: upgrade=dist
+     ignore_errors: yes
+
+   - name: remove old packages that are not needed
+     apt:
+       autoremove: yes
+
+   - name: purge config file left by old packages
+     apt:
+       purge: yes

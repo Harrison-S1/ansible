@@ -1,0 +1,29 @@
+---
+- hosts: newservers
+  become: yes
+
+  pre_tasks:
+   - name: Set timezone to Europe/Londo
+     timezone:
+       name: Europe/London
+
+   - include_role:
+       name: updateos
+
+  tasks:
+
+   - include_role:
+       name: firewall
+
+   - include_role:
+       name: os_hardening
+
+   - include_role:
+       name: ssh_hardening
+
+   - include_role:
+       name: apps_install
+
+   - include_role:
+       name: zabbix
+

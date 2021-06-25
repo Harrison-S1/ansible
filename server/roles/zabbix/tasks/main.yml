@@ -1,0 +1,60 @@
+---
+   - name: Download file from a file url.
+     get_url:
+       url: https://repo.zabbix.com/zabbix/4.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_4.0-2+bionic_all.deb
+       dest: /opt/
+
+   - name: Install a .deb package.
+     apt:
+       deb: /opt/zabbix-release_4.0-2+bionic_all.deb
+     ignore_errors: yes
+
+   - name: updates server
+     apt: update_cache=yes
+     ignore_errors: yes
+
+   - name: Install zabbix-agent scanners.
+     apt:
+       name: zabbix-agent
+       state: latest
+   - name: Install zabbix-sender scanners.
+     apt:
+       name: zabbix-sender
+       state: latest
+
+   - stat:
+       path: /etc/zabbix/database.psk
+     register: result
+
+   - shell: openssl rand -hex 64 > /etc/zabbix/database.psk
+     when: result.stat.exists == false
+
+   - name: Copy zabbix_agentd.conf file from host to remotehost,  backing up the original if it differs from the copied version.
+     copy:
+       src: ./templates/zabbix_agentd.conf
+       dest: /etc/zabbix/zabbix_agentd.conf
+       owner: root
+       group: root
+       mode: '0644'
+       backup: yes
+
+   - name: Copy zabbix.sh file from host to remotehost.
+     copy:
+       src: ./templates/zabbix.sh
+       dest: /opt/zabbix.sh
+       owner: root
+       group: root
+       mode: '0700'
+
+   - shell: /opt/zabbix.sh
+
+   - name: Restart service zabbix-agent.
+     service:
+       name: zabbix-agent
+       state: restarted
+
+   - shell: cat /etc/zabbix/database.psk
+     register: database
+
+   - debug:
+       msg: "{{database.stdout}}"
