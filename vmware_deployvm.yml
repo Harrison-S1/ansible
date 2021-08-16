@@ -1,0 +1,37 @@
+ ---
+  2 - hosts: localhost
+  3   gather_facts: no
+  4   vars:
+  5     vcenter_server: "IP/FQDN"
+  6     vcenter_user: "USERNAME"
+  7     vcenter_pass: "PASSWORD"
+  8     datacenter_name: "DSLAB01"
+  9     cluster_name: "LAB - LAN"
+ 10   tasks:
+ 11   - name: Clone the template
+ 12     vmware_guest:
+ 13       hostname: "{{ vcenter_server }}"
+ 14       username: "{{ vcenter_user }}"
+ 15       password: "{{ vcenter_pass }}"
+ 16       validate_certs: False
+ 17       name: HOSTNAME
+ 18       template: NAMEOFTEMPLATE
+ 19       datacenter: "{{ datacenter_name }}"
+ 20       folder: /{{ datacenter_name }}/vm
+ 21       cluster: "{{ cluster_name }}"
+ 22       datastore: "NAMEOFDATASTORE"
+ 23       networks:
+ 24       - name: NAMEOFNETWORK
+ 25         ip: 172.16.146.111
+ 26         netmask: 255.255.254.0
+ 27         gateway: 172.16.146.2
+ 28         type: static
+ 29         dns_servers:
+ 30       customization:
+ 31         hostname: "HOSTNAME"
+ 32         dns_servers:
+ 33         - 172.16.146.12
+ 34         - 10.120.52.100
+ 35       state: poweredon
+ 36       wait_for_ip_address: yes
+ 37     delegate_to: localhost
