@@ -1,5 +1,5 @@
 - hosts: all
-  sudo: true
+  become: true
   tasks:
    - name: updates server
      apt: update_cache=yes
